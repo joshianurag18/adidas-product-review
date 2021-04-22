@@ -22,26 +22,19 @@ const envOptions = {
 };
 
 function create() {
-  // Run the server!
-
   fastify.register(fastifyEnv, envOptions);
   fastify.register(fastifyRoutes);
   fastify.register(cors);
-
   // Auth
   fastify.register(authenticate);
-
   // routes
   fastify.register(routes);
-
-
-
   // knex connection
   fastify.register(knex, knexConfig[process.env.NODE_ENV]);
 
-  //fastify.register(fastifyJwt, { secret: 'asecretthatsverylongandimportedfromanenvfile' })
-
+  // token end point
   fastify.get('/token', (req, reply) => {
+    // TBD to out payload in secret variable 
     const token = fastify.jwt.sign({ username: 'Adidas', hello: 'Review Application' })
     reply.send({ token })
   })
