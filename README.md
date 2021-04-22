@@ -1,6 +1,5 @@
 # product-review-service
-This APP is used to get product review. This App has all crud operations around review 
-which is -
+This APP is used to perform various actions related to product review. This App has one microservice and end points related to crud operations of product review which are -
 * Post Review
 * Patch Review 
 * Get Review
@@ -8,7 +7,7 @@ which is -
 * Delete Review 
 
 This App secures all write operations which are with Post , Patch , Put and Delete.
-Need to first call below mention end point and get token.
+Need to first call below mention end point to get token.
 * Get Token 
 
 Get Token Api will return JWT token and need to send in all write APIs as request header 
