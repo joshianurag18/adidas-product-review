@@ -1,10 +1,11 @@
 # product-review-service
 This APP is used to get product review. This App has all operations around review 
 which is -
-Post Review
-Patch Review 
-Get Review
-Put Review
+* Post Review
+* Patch Review 
+* Get Review
+* Put Review
+* Delete Review 
 
 This App uses below mention tehnologies and tools
 1. Node Js 
