@@ -1,5 +1,5 @@
 # product-review-service
-This APP is used to get product review. This App has all operations around review 
+This APP is used to get product review. This App has all crud operations around review 
 which is -
 * Post Review
 * Patch Review 
@@ -7,26 +7,38 @@ which is -
 * Put Review
 * Delete Review 
 
-This App uses below mention tehnologies and tools
+This App secures all write operations which are with Post , Patch , Put and Delete.
+Need to first call below mention end point and get token.
+* Get Token 
+
+Get Token Api will return JWT token and need to send in all write APIs as request header 
+authorization token
+
+This App uses below mention technologies and tools
 1. Node Js 
 2. Fastify Framework
 3. Postgreys Database 
-4. Gitlab for Code Repository and CI-CD
+4. Gitlab for Image Repository and CI-CD
 5. Helm 
 
 This App has fully working CI-CD with Gitlab and ready to be deployed to GCP Cloud.
-This App uses Helm as deployment manager. 
+This App uses Helm as deployment package. 
 
 CI-CD contains below mention stages.
-Build
-Test Unit
-Test Integration 
-Deploy
+* Build
+* Lint 
+* Audit
+* Test Unit
+* Test Integration 
+* Deploy
 
-- Build Steps create image and put in gitlab registry. 
-Deploy step takes image from gitlab  registry and using helm deploy to gcp.
+- Build Steps create image and put in gitlab registry
+- Audit step uses Clair tools for security scanning 
+- Test Unit to make sure all unit test cases are working as expected
+- Test Integration to make sure all integration test cases are working as expected
+- Deploy step takes image from gitlab  registry and using helm deploy to gcp
 
-- This app stores all secret variables at git lab secret variable and which are stored to 
+- This app stores all secret variables at git lab secret variable and which are further  deployed to  
 gcp secret manager with the help of helm.
 
 - This App has test case coverage in terms of unit test cases and  integration test case.
@@ -34,12 +46,12 @@ gcp secret manager with the help of helm.
 - This App is using Helm to deploy. To deploy in GCP Kubernetes cluster need to define below mention 
 variables in gitlab secret variables.
 
-K8_CLUSTER_NAME
-K8_CLUSTER_REGION
-GCP_PROJECT_ID
-K8_NAMESPACE
-NPM_USERNAME
-NPM_PASSWORD
+* K8_CLUSTER_NAME
+* K8_CLUSTER_REGION
+* GCP_PROJECT_ID
+* K8_NAMESPACE
+* NPM_USERNAME
+* NPM_PASSWORD
 
 Below mention major NPM packages are used.
 
@@ -64,31 +76,12 @@ Below mention major NPM packages are used.
 "pg": "^8.2.1",
 "randomstring": "^1.1.5"
 
-Unit Testing and Integration testing is based on Jest framework.
-
-# product-review-service
-This APP is use to handle review of products
+- Unit Testing and Integration testing is based on Jest framework.
 
 
 Application for better compatibility needs to run with:
 
 node version **~12.15.0**
-
-> Reason for version lock: This has been resolved. node-gyp doesn't
-> currently support the latest nodejs (v13), so rolling back to v12
-> fixed it.
-
-### Install npm registry
-
-First you need to create a Access Token on gitlab and use generated
-access token with your gitlab's user account as login parameters
-below:
-
-    $ npm login --registry="https://fala.cl/npm/"
-
-type username, password..
-
-    $ npm config set @ci-reuse:registry=https://fala.cl/npm/
 
 ### Install Project Dependencies
 
@@ -129,7 +122,6 @@ Run All Tests:
 
 To start service on your local machine you may use
     $ npm run start
-s
 
 To run lint fixing you may use
     $ npm run link:fix
