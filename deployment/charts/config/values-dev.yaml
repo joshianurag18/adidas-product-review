@@ -1,0 +1,43 @@
+image:
+  repository: registry.gitlab.com/falabella-gitlab/catalyst/core/platform-services/development/master-data-service
+replicaCount: 1
+
+ingress:
+  enabled: true
+  uriPrefix: /master-data/
+  hosts:
+    - commerce-platform-dev.osmos.services
+    - osmos-dev.osmos.services
+
+jwt_policy:
+  enabled: true
+  mtls: true
+  identity:
+    - name: auth0
+      audience: "https://osmos-dev.osmos.services"
+      issuer: "https://osmos.auth0.com/"
+      uri: "https://osmos.auth0.com/.well-known/jwks.json"
+      excluded_path:
+        prefix: "/documentation/"
+
+containers:
+  port: 4444
+
+environment:
+  name: dev
+
+pod:
+  initialDelaySeconds: 30
+
+gcp:
+  enabled: true
+
+database:
+  enabled: true
+
+environmentVariables: 
+  NODE_ENV: "dev"
+
+service:
+  type: ClusterIP
+  port: 80  

@@ -1,0 +1,346 @@
+openapi: 3.0.1
+info:
+  title: Product Review APIs 
+  description: API Documentation For Product Review
+  version: 0.0.1-SNAPSHOT
+  contact:
+    email: janurag18@gmail.com
+security:
+  - bearerAuth: []
+tags:
+  - name: ProductReview
+    description: Product Review APIs
+paths:
+  /v1/product-review:
+    post:
+      description: Create review for any given product
+      tags:
+        - ProductReview
+      summary: Create Review for Product.
+      operationId: createReviewProductUsingPOST
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          schema:
+            type: string
+          required: true
+      requestBody:
+        description: request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+              data:
+              $ref: '#/components/schemas/ProductReview'
+        required: true
+      responses:
+        201:
+          description: Created
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ProductReview'
+        400:
+          description: Bad Request Data
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BadDataErrorResponse'
+        401:
+          description: Un-Authorized request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UnAuthorizedErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/DefaultErrorResponse'
+      deprecated: false
+      x-codegen-request-body-name: request
+  /v1/product-review/{productId}:
+    get:
+      description: get product review by productId
+      tags:
+        - ProductReview
+      summary: Get product Review.
+      operationId: findReviewByProductUsingGET
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          schema:
+            type: string
+        - name: productId
+          in: path
+          description: productId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+                $ref: '#/components/schemas/ProductReview'
+        '404':
+          description: Id Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultErrorResponse'
+      deprecated: false
+    delete:
+      description: delete product review by productId
+      tags:
+        - ProductReview
+      summary: Delete product review by productId
+      operationId: deleteProductReviewUsingDELETE
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          schema:
+            type: string
+          required: true
+        - name: productId
+          in: path
+          description: productId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+                properties:
+                 success:
+                  type: string
+                
+        '401':
+          description: Un-Authorized request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnAuthorizedErrorResponse'
+        '404':
+          description: Id Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultErrorResponse'
+      deprecated: false
+    put:
+      description: create or update product review by productId
+      tags:
+        - ProductReview
+      summary: Delete product review by productId
+      operationId: updateProductReviewUsingPUT
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          schema:
+            type: string
+          required: true
+        - name: productId
+          in: path
+          description: productId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ProductReview'
+                
+        '401':
+          description: Un-Authorized request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnAuthorizedErrorResponse'
+        '404':
+          description: Id Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultErrorResponse'
+      deprecated: false
+    patch:
+      description: Update product review by productId
+      tags:
+        - ProductReview
+      summary: Update product review by productId
+      operationId: patchProductReviewUsingPATCH
+      parameters:
+        - name: Authorization
+          in: header
+          description: Authorization
+          schema:
+            type: string
+          required: true
+        - name: productId
+          in: path
+          description: productId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+               $ref: '#/components/schemas/ProductReview'
+        '401':
+          description: Un-Authorized request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnAuthorizedErrorResponse'
+        '404':
+          description: Id Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultErrorResponse'
+      deprecated: false
+  
+components:
+  schemas:
+    UnAuthorizedErrorResponse:
+      title: UnAuthorizedErrorResponse
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+                description: Error Code
+                example: Unauthorized
+              message:
+                type: string
+                description: Error Message
+                example: Unauthorized
+    BadDataErrorResponse:
+      title: BadDataErrorResponse
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+                description: Code of error
+                example: "Bad Request"
+              message:
+                type: string
+                description: Error Message
+                example: "value for 'key' already exists"
+    DefaultErrorResponse:
+      title: DefaultErrorResponse
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              error:
+                type: string
+                description: Error Code
+                example: PRODUCT_REVIEW_SOMETHING_BAD_HAPPENED
+              message:
+                type: string
+                description: Error Message
+                example: Something went wrong
+    NotFoundErrorResponse:
+      title: NotFoundErrorResponse
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+                description: Error Code
+                example: PRODUCT_NOT_FOUND
+              message:
+                type: string
+                description: Error Message
+                example: Id Not Found
+    ProductReview:
+      title: ProductReview
+      required:
+      - productId
+      - averageReviewScore
+      - numberOfReviwes
+      type: object
+      properties:
+        data:
+           type: object
+           properties:
+            review:
+              type: object
+              properties:
+                productId:
+                 type: string
+                 description: 'Product Id'
+                 example: 'FX5898'
+                averageReviewScore:
+                 type: number
+                 description: 'Average Review Score'
+                 example: '4.5'
+                numberOfReviwes:
+                 type: number
+                 description: 'Number Of Reviwes'
+                 example: '4'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+# Added by API Auto Mocking Plugin
+servers:
+  - description: SwaggerHub API Auto Mocking
+    url: https://api-governance-corp.falabella.com/virts/Digital-Retail/shipments-api/0.0.1-SNAPSHOT
