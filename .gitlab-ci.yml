@@ -1,0 +1,205 @@
+---
+include:
+  - "https://falabella-gitlab.gitlab.io/ci-reuse/lint/markdown/.include.yml"
+  - "https://falabella-gitlab.gitlab.io/ci-reuse/lint/yaml/.include.yml"
+  - "https://falabella-gitlab.gitlab.io/ci-reuse/build/docker/.include.yml"
+  - "https://falabella-gitlab.gitlab.io/ci-reuse/deploy/gcloud/helm/.include.yml"
+  - project: "falabella-gitlab/ci-reuse/audit/clair"
+    ref: stable
+    file: "/template/.ci-template.yml"
+  - project: "falabella-gitlab/ci-reuse/audit/dependency-check"
+    ref: stable
+    file: "/template/.ci-template.yml"
+  - project: "falabella-gitlab/ci-reuse/audit/nodejs-scan"
+    ref: stable
+    file: "/template/.ci-template.yml"
+  - project: "falabella-gitlab/ci-reuse/audit/veracode"
+    ref: stable
+    file: "/template/.ci-template.yml"
+  - template: Code-Quality.gitlab-ci.yml
+
+image: mhart/alpine-node:12.20
+
+variables:
+  CI_PROJECT_NAME: "master-data-service"
+  YAMLLINT_INPUT: ".gitlab-ci.yml"
+  HELM_PATH: "deployment/charts/${CI_PROJECT_NAME}"
+  DOCKER_BUILD_ARG: "--build-arg NPM_USERNAME --build-arg NPM_TOKEN"
+  HELM_RELEASE_NAME: "${CI_PROJECT_NAME}"
+  DC_TARGET_LANG: "node"
+  VERACODE_ZIP: "true"
+  VERACODE_INCLUDE: "src/* *.js *.json"
+  VERACODE_EXCLUDE: "src/**/__mocks__/*.js src/**/__tests__/*.js"
+
+stages:
+  - build-cache
+  - lint
+  - test
+  - build
+  - audit
+  - deploy
+
+build-cache:
+  stage: build-cache
+  cache:
+    key:
+      files:
+        - package.json
+        - package-lock.json
+    paths:
+      - .npm/
+  before_script:
+    - |
+      npm config set \
+      @falabella-gitlab:registry=https://gitlab.com/api/v4/packages/npm/
+    - npm config set //gitlab.com/api/v4/packages/npm/:_authToken=$NPM_TOKEN
+    - |
+    - npm config set \
+      //gitlab.com/api/v4/projects/23294368/packages/npm/:_authToken=$NPM_TOKEN
+
+  script:
+    - npm ci --cache .npm --prefer-offline --no-audit
+  artifacts:
+    paths:
+      - node_modules
+    expire_in: 45 mins
+  tags:
+    - catalyst-docker-runner
+
+node:
+  stage: lint
+  dependencies:
+    - build-cache
+  script:
+    - npm run lint
+
+node.js:
+  stage: test
+  dependencies:
+    - build-cache
+  script:
+    - npm run test
+  coverage: /^All files[^|]*\|[^|]*\s+([\d\.]+)/
+
+################################
+# environment: dev
+################################
+
+deploy_dev:
+  extends: .helm_deploy
+  stage: deploy
+  environment:
+    name: dev
+  variables:
+    K8_CLUSTER_NAME: ${K8_CLUSTER_NAME}
+    K8_CLUSTER_REGION: ${K8_CLUSTER_REGION}
+    K8_NAMESPACE: ${K8_NAMESPACE}
+    HELM_RELEASE_NAME: ${CI_PROJECT_NAME}
+    HELM_OPTS: --set-string image.pullSecret.registry=${CI_REGISTRY}
+      --set-string image.pullSecret.username=${CI_DEPLOY_USER}
+      --set-string image.pullSecret.password=${CI_DEPLOY_PASSWORD}
+      --set-string environmentVariables.PROJECT_ID=${GCP_PROJECT_ID}
+      --values deployment/charts/config/values-${CI_ENVIRONMENT_NAME}.yaml
+  only:
+    - master
+  tags:
+    - catalyst-docker-runner
+
+################################
+# environment: staging
+################################
+deploy_staging:
+  extends: .helm_deploy
+  stage: deploy
+  environment:
+    name: staging
+  variables:
+    K8_CLUSTER_NAME: ${K8_CLUSTER_NAME}
+    K8_CLUSTER_REGION: ${K8_CLUSTER_REGION}
+    K8_NAMESPACE: ${K8_NAMESPACE}
+    HELM_RELEASE_NAME: ${CI_PROJECT_NAME}
+    HELM_OPTS: --set-string image.pullSecret.registry=${CI_REGISTRY}
+      --set-string image.pullSecret.username=${CI_DEPLOY_USER}
+      --set-string image.pullSecret.password=${CI_DEPLOY_PASSWORD}
+      --set-string environmentVariables.PROJECT_ID=${GCP_PROJECT_ID}
+      --values deployment/charts/config/values-${CI_ENVIRONMENT_NAME}.yaml
+  only:
+    - master
+    - tags
+  when: manual
+
+################################
+# environment: production
+################################
+deploy_production:
+  extends: .helm_deploy
+  stage: deploy
+  environment:
+    name: production
+  variables:
+    K8_CLUSTER_NAME: ${K8_CLUSTER_NAME}
+    K8_CLUSTER_REGION: ${K8_CLUSTER_REGION}
+    K8_NAMESPACE: ${K8_NAMESPACE}
+    HELM_RELEASE_NAME: ${CI_PROJECT_NAME}
+    HELM_OPTS: --set-string image.pullSecret.registry=${CI_REGISTRY}
+      --set-string image.pullSecret.username=${CI_DEPLOY_USER}
+      --set-string image.pullSecret.password=${CI_DEPLOY_PASSWORD}
+      --set-string environmentVariables.PROJECT_ID=${GCP_PROJECT_ID}
+      --values deployment/charts/config/values-${CI_ENVIRONMENT_NAME}.yaml
+  only:
+    - master
+    - tags
+  when: manual
+
+#################################
+# environment: sodimac production
+################################
+deploy_sodimac_production:
+  extends: .helm_deploy
+  stage: deploy
+  environment:
+    name: sodimac
+  variables:
+    K8_CLUSTER_NAME: ${K8_CLUSTER_NAME}
+    K8_CLUSTER_REGION: ${K8_CLUSTER_REGION}
+    K8_NAMESPACE: ${K8_NAMESPACE}
+    HELM_RELEASE_NAME: ${CI_PROJECT_NAME}
+    HELM_OPTS: --set-string image.pullSecret.registry=${CI_REGISTRY}
+      --set-string image.pullSecret.username=${CI_DEPLOY_USER}
+      --set-string image.pullSecret.password=${CI_DEPLOY_PASSWORD}
+      --set-string environmentVariables.PROJECT_ID=${GCP_PROJECT_ID}
+      --values deployment/charts/config/values-${CI_ENVIRONMENT_NAME}.yaml
+  only:
+    - master
+    - tags
+  when: manual
+
+#################################
+# environment: falabella production
+################################
+deploy_falabella_production:
+  extends: .helm_deploy
+  stage: deploy
+  environment:
+    name: falabella
+  variables:
+    K8_CLUSTER_NAME: ${K8_CLUSTER_NAME}
+    K8_CLUSTER_REGION: ${K8_CLUSTER_REGION}
+    K8_NAMESPACE: ${K8_NAMESPACE}
+    HELM_RELEASE_NAME: ${CI_PROJECT_NAME}
+    HELM_OPTS: --set-string image.pullSecret.registry=${CI_REGISTRY}
+      --set-string image.pullSecret.username=${CI_DEPLOY_USER}
+      --set-string image.pullSecret.password=${CI_DEPLOY_PASSWORD}
+      --set-string environmentVariables.PROJECT_ID=${GCP_PROJECT_ID}
+      --values deployment/charts/config/values-${CI_ENVIRONMENT_NAME}.yaml
+  only:
+    - master
+    - tags
+  when: manual
+
+clair-analysis:
+  stage: audit
+  before_script:
+    - export SCAN_IMAGE="${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA:0:8}"
+    - export REGISTRY_USER='gitlab-ci-token'
+    - export REGISTRY_PASSWORD="${CI_BUILD_TOKEN}"
