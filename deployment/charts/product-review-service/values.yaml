@@ -12,7 +12,7 @@ autoscaling:
   enabled: false
 
 image:
-  repository: r.fala.cl/catalyst/core/platform-services/development/master-data-service
+  repository:  # Need to put image repo name url
   tag: latest
   pullPolicy: IfNotPresent
   pullSecret:
@@ -37,9 +37,9 @@ ingress:
     {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
-  uriPrefix: /content/
+  uriPrefix: /catalog/
   hosts:
-    - "https://osmos-staging.osmos.services"
+    - "https://dev.adidas.services"  # Giving one sample url
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
@@ -48,7 +48,7 @@ ingress:
 egress:
   enabled: false
   hosts:
-    - "*.sodimac.cl"
+    - "*.adidas.services"
 
 pod:
   initialDelaySeconds: 15
@@ -116,15 +116,15 @@ secret:
 #     name: beta
 #     enabled: false
 
-#  ingress:
-#   enabled: true
-#   uriPrefix: /v1/orders/
-#   hosts:
-#     - "commerce-dev.sodimac.cl"
+ingress:
+    enabled: true
+    uriPrefix: /v1/product-review/
+    hosts:
+      - "dev.adidas.services"
 
-# autoscaling:
-#   enabled: false
-#   minReplicas: 3
-#   maxReplicas: 10
-#   targetCPUAverageUtilization: 75
-#   targetMemoryAverageUtilization: 75
+autoscaling:
+   enabled: true
+   minReplicas: 3
+   maxReplicas: 10
+   targetCPUAverageUtilization: 75
+   targetMemoryAverageUtilization: 75

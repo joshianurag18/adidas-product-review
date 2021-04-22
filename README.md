@@ -52,6 +52,20 @@ variables in gitlab secret variables.
 * NPM_USERNAME
 * NPM_PASSWORD
 
+- This App has capability to configure istio configurations also. Configurations are kept 
+inside deployment folder.
+- Some dummy URL as dev.adidas.services is configured in deployment/charts/config/value-dev.yaml 
+- Complete URL will be like dev.adidas.services/catalog/v1/product-review/
+- At Istio Vertual Services these URLs can be configured and actual configurations are present at values.yaml 
+- This App has Auto scale configurations also present. These configureations are kept inside helm folders hpa..yaml
+- Configrations for auto scale is kept as-
+   * minReplicas: 3
+   * maxReplicas: 10
+   * targetCPUAverageUtilization: 75
+   * targetMemoryAverageUtilization: 75
+- Means mimimum pod will be 3 and max can be scaled upto 10
+- When pod reach 75 % of CPU and 75% of heap , new pod will be created
+
 Below mention major NPM packages are used.
 
 "ajv": "^6.10.2",
