@@ -1,4 +1,4 @@
-// const { extractTenantId } = require("../hooks");
+
 const {
   getReviewSchema,
   saveReviewSchema,
@@ -16,7 +16,6 @@ const {
 } = require("./handlers/review");
 
 module.exports = async fastify => {
-  // fastify.addHook("onRequest", extractTenantId);
 
   fastify.route({
     method: "POST",

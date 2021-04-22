@@ -4,6 +4,7 @@ const fp = require("fastify-plugin");
 
 module.exports = fp(async function (fastify, opts) {
     fastify.register(require("fastify-jwt"), {
+        // Sample Code , Need to put in gitlab secure variable with Admin Access only
         secret: "asecretthatsverylongandimportedfromanenvfile"
     }) 
 

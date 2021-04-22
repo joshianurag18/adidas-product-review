@@ -6,8 +6,6 @@ const {
 } = require("../../commons/constants");
 
 exports.saveReviews = async function saveReviews({ review }) {
-  console.log("-----Repository------------");
-  console.log(review);
   const productId = review.product_id;
   const keyCount = await this.knex("product_review")
     .count("product_id")
@@ -19,18 +17,14 @@ exports.saveReviews = async function saveReviews({ review }) {
       "productId"
     );
   const response = this.knex("product_review").returning("*").insert(review);
-  console.log("*********");
-  console.log(response);
   return response;
 };
 
 exports.updateReviewById = async function updateReviewById({ review }) {
-  console.log("Update-----", review);
   const key = await this.knex("product_review")
     .select("product_id")
     .where("product_id", review.product_id);
   if (key.length > 0) {
-    console.log("******Update");
     const response = await this.knex("product_review")
       .where("product_id", review.product_id)
       .update({
@@ -49,15 +43,12 @@ exports.patchReviewById = async function patchReviewById({
   productId,
   review
 }) {
-  console.log("Patch.........", productId, review);
-
   const query = this.knex("product_review")
     .where("product_id", productId)
     .returning("*");
 
   const response = await query;
   if (!response.length) {
-    console.log("Patch Error.........");
     throw CustomError.create(
       HttpStatus.NOT_FOUND,
       KEY_DOES_NOT_EXIST,
@@ -89,8 +80,6 @@ exports.getReviewByProductId = async function getReviewByProductId({
 };
 
 exports.deleteReviewById = async function deleteReviewById({ productId }) {
-  console.log("------Repo Delete------");
-  console.log(productId);
   const keyCount = await this.knex("product_review")
     .count("product_id")
     .where("product_id", productId);

@@ -13,7 +13,7 @@ const knex = require("./app/plugins/knex");
 const authenticate = require("./app/plugins/authenticate");
 const { knexConfig } = require("../config/index");
 const routes = require("./app");
-const { extractLogTrace, methodNotFoundHandler } = require("./app/hooks");
+//const { extractLogTrace, methodNotFoundHandler } = require("./app/hooks");
 const { envSchema: schema } = require("./app/commons/schema");
 
 const envOptions = {
@@ -28,13 +28,13 @@ function create() {
   fastify.register(fastifyRoutes);
   fastify.register(cors);
 
-   // Auth
-   fastify.register(authenticate);
+  // Auth
+  fastify.register(authenticate);
 
   // routes
   fastify.register(routes);
 
- 
+
 
   // knex connection
   fastify.register(knex, knexConfig[process.env.NODE_ENV]);
@@ -66,9 +66,7 @@ function create() {
   });
 
   return fastify;
-  // hooks
-  // fastify.addHook("onRequest", extractLogTrace);
-  // fastify.addHook("preParsing", methodNotFoundHandler(fastify));
+
 }
 
 function init(fastifyS) {
@@ -98,8 +96,6 @@ try {
     `Invalid arg '${process.argv[2]}'. Please supply: 'start' OR 'docs'`
   );
 }
-
-//start();
 
 module.exports = {
   create,

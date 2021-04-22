@@ -60,50 +60,7 @@ const commonErrorSchema = {
   }
 };
 
-exports.headersSchema = {
-  type: "object",
-  required: ["Authorization"],
-  properties: {
-    Authorization: { type: "string" }
-  }
-};
 
-exports.customInfoSchema = {
-  type: "array",
-  items: {
-    type: "object",
-    properties: {
-      id: { type: "string" },
-      type: { type: "string" },
-      name: { type: "string" },
-      description: { type: "string" },
-      order: { type: "number" },
-      group: { type: "string" },
-      isMandatory: { type: "boolean" },
-      values: {
-        type: "array",
-        items: {
-          type: "string"
-        }
-      },
-      metadata: {
-        type: "array",
-        items: { type: "object" }
-      }
-    }
-  }
-};
-
-exports.auditSchema = {
-  type: "object",
-  additionalProperties: false,
-  properties: {
-    createdBy: { type: "string" },
-    createdAt: { type: "string", format: "date-time" },
-    updatedBy: { type: "string" },
-    updatedAt: { type: "string", format: "date-time" }
-  }
-};
 exports.errorSchemas = {
   400: validationErrorSchema,
   401: commonErrorSchema,

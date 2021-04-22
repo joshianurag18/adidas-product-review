@@ -28,7 +28,6 @@ const mapReviewBodyForPatch = review => ({
 
 exports.saveReviews = async (fastify, request) => {
   const { review } = request.body.data;
-  console.log("Save Review----", review);
   const response = await saveReviews.call(fastify, {
     review: mapReviewBody(review)
   });
